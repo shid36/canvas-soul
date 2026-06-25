@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas & Soul</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Canvas & Soul</h1>
+        <p>Capture Moments, Preserve Memories</p>
+    </header>
+
+   <section class="gallery">
+
+    <% photos.forEach(photo => { %>
+
+        <div class="card">
+
+            <img src="/uploads/<%= photo.image %>" alt="Photo">
+
+            <h3><%= photo.title %></h3>
+
+            <p>Code: <%= photo.photo_code %></p>
+
+            <p>Price: ৳<%= photo.price %></p>
+
+            <a href="https://wa.me/8801737370527?text=Hello Canvas & Soul, I want to buy Photo Code <%= photo.photo_code %>"
+               target="_blank">
+                Order on WhatsApp
+            </a>
+
+        </div>
+
+    <% }) %>
+
+</section>
+
+    <footer>
+        <p>Need more details?</p>
+        <p>Call: 01706291050</p>
+        <p>WhatsApp: 01737370527</p>
+    </footer>
+
+</body>
+</html>
