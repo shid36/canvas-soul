@@ -12,7 +12,9 @@ header{
 
 .gallery{
     display:flex;
+    flex-wrap:wrap;
     justify-content:center;
+    gap:20px;
     padding:20px;
 }
 
@@ -22,6 +24,7 @@ header{
     border-radius:12px;
     width:350px;
     text-align:center;
+    box-sizing:border-box;
 }
 
 .card img{
@@ -42,4 +45,22 @@ header{
 footer{
     text-align:center;
     padding:30px;
+}
+
+/* Mobile Responsive */
+
+@media (max-width:768px){
+
+    header{
+        padding:20px;
+    }
+
+    .gallery{
+        padding:10px;
+    }
+
+    .card{
+        width:95%;
+        max-width:350px;
+    }
 }
