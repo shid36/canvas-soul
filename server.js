@@ -57,7 +57,8 @@ const upload = multer({ storage: storage });
 app.get("/", (req, res) => {
   db.query("SELECT * FROM photos ORDER BY id DESC", (err, results) => {
     if (err) {
-      return res.send("Database Error");
+      console.log("HOME PAGE ERROR:", err);
+      return res.send(err.message);
     }
 
     res.render("index", { photos: results });
