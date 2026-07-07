@@ -4,6 +4,15 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const multer = require("multer");
+require("dotenv").config();
+
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,16 +43,15 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "canvas-soul",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 app.get("/", (req, res) => {
   db.query("SELECT * FROM photos ORDER BY id DESC", (err, results) => {
@@ -87,7 +95,7 @@ app.post("/upload", upload.single("photo"), (req, res) => {
   const title = req.body.title;
   const photo_code = req.body.photo_code;
   const price = req.body.price;
-  const image = req.file.filename;
+const image = req.file.path;
 
   const sql =
     "INSERT INTO photos (title, photo_code, price, image) VALUES (?, ?, ?, ?)";
@@ -102,7 +110,7 @@ app.post("/upload", upload.single("photo"), (req, res) => {
     res.redirect("/admin");
   });
 });
-app.post("/delete/:id", (req, res) => {
+app.post("/delete/:id", async (req, res) => {
 const id = req.params.id;
 
 db.query("SELECT * FROM photos WHERE id = ?", [id], (err, result) => {
@@ -112,18 +120,16 @@ if (err) return res.send("Database Error");
 if (result.length === 0) {
   return res.send("Photo Not Found");
 }
+const imageUrl = result[0].image;
 
-const imageName = result[0].image;
+if (imageUrl && imageUrl.includes("cloudinary")) {
+  const publicId = imageUrl
+    .split("/")
+    .slice(-2)
+    .join("/")
+    .split(".")[0];
 
-const imagePath = path.join(
-  __dirname,
-  "public",
-  "uploads",
-  imageName
-);
-
-if (fs.existsSync(imagePath)) {
-  fs.unlinkSync(imagePath);
+  await cloudinary.uploader.destroy(publicId);
 }
 
 db.query("DELETE FROM photos WHERE id = ?", [id], (err) => {
