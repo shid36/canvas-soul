@@ -47,6 +47,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "canvas-soul",
+      allowed_formats: ["jpg", "jpeg", "png", "heic","webp"],
   },
 });
 
