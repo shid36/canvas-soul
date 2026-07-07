@@ -47,7 +47,6 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "canvas-soul",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
   },
 });
 
@@ -92,23 +91,29 @@ app.get("/admin", (req, res) => {
   });
 });
 app.post("/upload", upload.single("photo"), (req, res) => {
-  const title = req.body.title;
-  const photo_code = req.body.photo_code;
-  const price = req.body.price;
-const image = req.file.path;
+  try {
+    console.log(req.file);
 
-  const sql =
-    "INSERT INTO photos (title, photo_code, price, image) VALUES (?, ?, ?, ?)";
+    const title = req.body.title;
+    const photo_code = req.body.photo_code;
+    const price = req.body.price;
+    const image = req.file.path;
 
-  db.query(sql, [title, photo_code, price, image], (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.send("Database Error");
-    }
+    const sql =
+      "INSERT INTO photos (title, photo_code, price, image) VALUES (?, ?, ?, ?)";
 
-    console.log("Photo saved to database");
-    res.redirect("/admin");
-  });
+    db.query(sql, [title, photo_code, price, image], (err) => {
+      if (err) {
+        console.log(err);
+        return res.send("Database Error");
+      }
+
+      res.redirect("/admin");
+    });
+  } catch (err) {
+    console.log("UPLOAD ERROR:", err);
+    res.status(500).send(err.message);
+  }
 });
 app.post("/delete/:id", async (req, res) => {
 const id = req.params.id;
