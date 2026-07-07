@@ -98,6 +98,8 @@ app.post("/upload", upload.single("photo"), (req, res) => {
     const photo_code = req.body.photo_code;
     const price = req.body.price;
     const image = req.file.path;
+    console.log(req.file);
+console.log(req.file.path);
 
     const sql =
       "INSERT INTO photos (title, photo_code, price, image) VALUES (?, ?, ?, ?)";
