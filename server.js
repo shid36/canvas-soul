@@ -44,11 +44,12 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
+  cloudinary,
+  params: async (req, file) => ({
     folder: "canvas-soul",
-      allowed_formats: ["jpg", "jpeg", "png", "heic","HEIC","webp"],
-  },
+    format: "jpg",
+    public_id: Date.now().toString(),
+  }),
 });
 
 const upload = multer({ storage });
