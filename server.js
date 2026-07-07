@@ -115,36 +115,16 @@ app.post("/upload", upload.single("photo"), (req, res) => {
     res.status(500).send(err.message);
   }
 });
-app.post("/delete/:id", async (req, res) => {
-const id = req.params.id;
+app.post("/delete/:id", (req, res) => {
+  const id = req.params.id;
 
-db.query("SELECT * FROM photos WHERE id = ?", [id], (err, result) => {
-if (err) return res.send("Database Error");
+  db.query("DELETE FROM photos WHERE id = ?", [id], (err) => {
+    if (err) {
+      return res.send("Delete Error");
+    }
 
-
-if (result.length === 0) {
-  return res.send("Photo Not Found");
-}
-const imageUrl = result[0].image;
-
-if (imageUrl && imageUrl.includes("cloudinary")) {
-  const publicId = imageUrl
-    .split("/")
-    .slice(-2)
-    .join("/")
-    .split(".")[0];
-
-  await cloudinary.uploader.destroy(publicId);
-}
-
-db.query("DELETE FROM photos WHERE id = ?", [id], (err) => {
-  if (err) return res.send("Delete Error");
-
-  res.redirect("/admin");
-});
-
-
-});
+    res.redirect("/admin");
+  });
 });
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
